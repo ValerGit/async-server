@@ -34,9 +34,11 @@ if __name__ == '__main__':
 
     serve = Server(config, args.cpu_num, args.root_dir)
     serve.start()
-
-    while True:
-        events = serve.selector.select()
-        for key, mask in events:
-            callback = key.data
-            callback()
+    try:
+        while True:
+            events = serve.selector.select()
+            for key, mask in events:
+                callback = key.data
+                callback()
+    except KeyboardInterrupt:
+        serve.stop()

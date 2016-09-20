@@ -1,4 +1,4 @@
-class Future():
+class Future:
     def __init__(self):
         self.result = None
         self._callbacks = []

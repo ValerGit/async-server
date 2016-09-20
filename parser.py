@@ -1,10 +1,10 @@
-import os
 import datetime
+import os
 import urllib.parse
 
 from http_codes import ANSWER_CODES, OK, BAD_REQUEST, FORBIDDEN, NOT_FOUND
 
-DEFAULT_PAGE = 'index.html'
+
 CONTENT_TYPES = {
     'html': 'text/html',
     'css': 'text/css',
@@ -15,6 +15,8 @@ CONTENT_TYPES = {
     'gif': 'image/gif',
     'swf': 'application/x-shockwave-flash'
 }
+DEFAULT_PAGE = 'index.html'
+DEFAULT_ENCODING = 'utf-8'
 HTTP_V = 'HTTP/1.1'
 SERVER_NAME = 'Morelia'
 SUPPORTED_HEADERS = ['GET', 'HEAD']
@@ -51,6 +53,7 @@ def response_builder(code, file=None, file_path=None, is_head=False):
         content_type = \
             CONTENT_TYPES.get(expansion, 'application/octet-stream') \
             if file_path else 'application/octet-stream'
+
     except Exception:
         return response_builder(NOT_FOUND)
 
