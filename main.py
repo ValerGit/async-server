@@ -18,7 +18,7 @@ def parse_arguments():
     parser.add_argument(
         '-r', '--root-dir', required=True, help='Root directory for reading files')
     parser.add_argument(
-        '-n', '--cpu-num', default=4, choices=[1, 2, 3, 4], help='Number of cpu to use')
+        '-n', '--cpu-num', default=3, type=int, help='Number of cpu')
 
     return parser.parse_args()
 
@@ -28,8 +28,8 @@ if __name__ == '__main__':
     config = configparser.RawConfigParser()
     config.read(args.config)
 
-    if not os.path.isdir(args.root_dir):
-        print('Fatal. Root directory is wrong!')
+    if not os.path.isdir(args.root_dir) or args.cpu_num < 1:
+        print('Fatal error. Please enter right arguments!')
         sys.exit()
 
     serve = Server(config, args.cpu_num, args.root_dir)

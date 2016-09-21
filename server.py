@@ -43,7 +43,7 @@ class Server:
         print('Root directory is {root_dir}'.format(root_dir=self.root_dir))
         for _ in range(self.num_of_cpu - 1):
             if not os.fork():
-                self.is_parent=False
+                self.is_parent = False
                 break
         self.selector = DefaultSelector()
         self.selector.register(self.sock.fileno(), EVENT_READ, self.acceptor)
