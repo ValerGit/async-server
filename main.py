@@ -3,6 +3,7 @@ import configparser
 import os
 import sys
 
+from parser import SERVER_NAME
 from server import Server
 
 DEFAULT_CONFIG_PATH = 'config.ini'
@@ -11,7 +12,7 @@ DEFAULT_CONFIG_PATH = 'config.ini'
 def parse_arguments():
     parser = argparse.ArgumentParser(
         formatter_class=argparse.ArgumentDefaultsHelpFormatter,
-        description='Morelia HTTP server')
+        description='{server_name} HTTP server'.format(server_name=SERVER_NAME))
 
     parser.add_argument(
         '-c', '--config', default=DEFAULT_CONFIG_PATH, help='Configuration file')

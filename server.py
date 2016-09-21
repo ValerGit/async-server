@@ -38,8 +38,8 @@ class Server:
         self.sock.bind((self.host, self.port))
         self.sock.listen(self.num_of_users)
         print(
-            'Started {server_name} server at {host}:{port}'
-            .format(host=self.host, port=self.port, server_name=SERVER_NAME))
+            'Started {server_name} server at {host}:{port} with {num_cpu} workers'
+            .format(host=self.host, port=self.port, server_name=SERVER_NAME, num_cpu=self.num_of_cpu))
         print('Root directory is {root_dir}'.format(root_dir=self.root_dir))
         for _ in range(self.num_of_cpu - 1):
             if not os.fork():

@@ -4,7 +4,6 @@ import urllib.parse
 
 from http_codes import ANSWER_CODES, OK, BAD_REQUEST, FORBIDDEN, NOT_FOUND
 
-
 CONTENT_TYPES = {
     'html': 'text/html',
     'css': 'text/css',
@@ -20,49 +19,6 @@ DEFAULT_ENCODING = 'utf-8'
 HTTP_V = 'HTTP/1.1'
 SERVER_NAME = 'Morelia'
 SUPPORTED_HEADERS = ['GET', 'HEAD']
-
-
-def response_ok(**kwargs):
-    apppend_file = kwargs.get('file') if kwargs.get('file') else b''
-    return (
-        '{http_type} {code} {code_val}\r\n'
-        'Date: {date}\r\n'
-        'Server: {server_name}\r\n'
-        'Content-Length: {content_length}\r\n'
-        'Content-Type: {content_type}\r\n'
-        'Connection: Closed\r\n\r\n'
-    ).format(server_name=SERVER_NAME, http_type=HTTP_V, **kwargs).encode() + apppend_file
-
-
-def response_bad(**kwargs):
-    return (
-        '{http_type} {code} {code_val}\r\n'
-        'Date: {date}\r\n'
-        'Server: {server_name}\r\n'
-        'Connection: Closed\r\n\r\n'
-    ).format(server_name=SERVER_NAME, http_type=HTTP_V, **kwargs).encode()
-
-
-def response_builder(code, file=None, file_path=None, is_head=False):
-    code_val = ANSWER_CODES.get(code)
-    date = datetime.datetime.utcnow().strftime('%a, %d %b %Y %H:%M:%S GMT')
-    content_length = len(file) if file else 0
-    file = None if is_head else file
-    try:
-        expansion = file_path.rsplit('.').pop() if file_path else None
-        content_type = \
-            CONTENT_TYPES.get(expansion, 'application/octet-stream') \
-            if file_path else 'application/octet-stream'
-
-    except Exception:
-        return response_builder(NOT_FOUND)
-
-    if code == OK:
-        return response_ok(
-            code=code, code_val=code_val, date=date,
-            content_length=content_length,
-            content_type=content_type, file=file)
-    return response_bad(code=code, code_val=code_val, date=date)
 
 
 def parser(request, doc_root):
@@ -101,3 +57,46 @@ def path_checker(path):
     while '/' is new_path[0] and len(new_path) > 1:
         new_path = new_path[1:]
     return new_path
+
+
+def response_ok(**kwargs):
+    file = kwargs.get('file') if kwargs.get('file') else b''
+    return (
+        '{http_type} {code} {code_val}\r\n'
+        'Date: {date}\r\n'
+        'Server: {server_name}\r\n'
+        'Content-Length: {content_length}\r\n'
+        'Content-Type: {content_type}\r\n'
+        'Connection: Closed\r\n\r\n'
+    ).format(server_name=SERVER_NAME, http_type=HTTP_V, **kwargs).encode() + file
+
+
+def response_bad(**kwargs):
+    return (
+        '{http_type} {code} {code_val}\r\n'
+        'Date: {date}\r\n'
+        'Server: {server_name}\r\n'
+        'Connection: Closed\r\n\r\n'
+    ).format(server_name=SERVER_NAME, http_type=HTTP_V, **kwargs).encode()
+
+
+def response_builder(code, file=None, file_path=None, is_head=False):
+    code_val = ANSWER_CODES.get(code)
+    date = datetime.datetime.utcnow().strftime('%a, %d %b %Y %H:%M:%S GMT')
+    content_length = len(file) if file else 0
+    file = None if is_head else file
+    try:
+        expansion = file_path.rsplit('.').pop() if file_path else None
+        content_type = \
+            CONTENT_TYPES.get(expansion, 'application/octet-stream') \
+            if file_path else 'application/octet-stream'
+
+    except Exception:
+        return response_builder(NOT_FOUND)
+
+    if code == OK:
+        return response_ok(
+            code=code, code_val=code_val, date=date,
+            content_length=content_length,
+            content_type=content_type, file=file)
+    return response_bad(code=code, code_val=code_val, date=date)
