@@ -13,17 +13,17 @@ class Future:
 
 
 class Task:
-    def __init__(self, corout, conn):
-        self.corout = corout
-        self.corout.send(None)
-        self.fileno = conn
+    def __init__(self, coroutine, fileno):
+        self.coroutine = coroutine
+        self.coroutine.send(None)
+        self.fileno = fileno
         fut = Future()
-        fut.set_result(conn)
+        fut.set_result(fileno)
         self.step(fut)
 
     def step(self, fut):
         try:
-            next_fut = self.corout.send(fut.result)
+            next_fut = self.coroutine.send(fut.result)
         except (StopIteration, ValueError):
             return
         next_fut.append_done_callback(self.step)

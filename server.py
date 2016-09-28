@@ -51,38 +51,39 @@ class Server:
     def handler(self):
         future = Future()
         response = None
-        conn = yield
+        connection = yield
 
         def readable():
             future.set_result(future)
 
-        self.selector.register(conn.fileno(), EVENT_READ, readable)
+        self.selector.register(connection, EVENT_READ, readable)
         yield future
 
         try:
-            self.selector.unregister(conn)
-            data = conn.recv(self.receive_size)
+            self.selector.unregister(connection)
+            data = connection.recv(self.receive_size)
             response = parser(data.decode(DEFAULT_ENCODING), self.root_dir)
         except Exception:
-            conn.close()
+            connection.close()
 
         def writable():
             future.set_result(future)
 
-        self.selector.register(conn, EVENT_WRITE, writable)
+        self.selector.register(connection, EVENT_WRITE, writable)
         yield future
 
-        self.selector.unregister(conn)
+        self.selector.unregister(connection)
         try:
             for chunk in chunk_maker(response, self.send_size):
-                conn.send(chunk)
-                self.selector.register(conn, EVENT_WRITE, writable)
+                connection.send(chunk)
+                self.selector.register(connection, EVENT_WRITE, writable)
                 yield future
-                self.selector.unregister(conn)
+                self.selector.unregister(connection)
         finally:
-            conn.close()
+            connection.close()
 
     def stop(self):
         if self.is_parent:
             print('{server_name} server stopped'.format(server_name=SERVER_NAME))
+            return
         os._exit(os.EX_OK)
